@@ -65,6 +65,7 @@ class YahooBackupScraper:
         time.sleep(1)
 
         if self._is_login_page():
+            eprint("Processing login page ...")
             self._process_login_page()
             # get the page again
             self.br.visit(url)
@@ -186,8 +187,12 @@ class YahooBackupScraper:
 
         raw = self._load_json_url(url + "/raw")
 
-        data = formatted['ygData']
-        data['rawEmail'] = raw['ygData']['rawEmail']
+        try: 
+            data = formatted['ygData']
+            data['rawEmail'] = raw['ygData']['rawEmail']
+        except:
+            eprint("Failed to extract data components of result, trying again...")
+            return self.get_message(message_number)
 
         try:
             return self._massage_message(data)
